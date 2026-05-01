@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { EVENT } from "@/lib/constants";
+import Countdown from "./Countdown";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -42,6 +43,10 @@ export default function HeroSection() {
           <p className="text-navy font-semibold text-lg">
             🎓 Lễ Tốt Nghiệp
           </p>
+        </motion.div>
+
+        <motion.div variants={fadeUp} className="mt-4 w-full">
+          <Countdown />
         </motion.div>
 
         <motion.a
