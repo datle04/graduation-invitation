@@ -25,21 +25,19 @@ function calcTimeLeft(target: Date): TimeLeft | null {
 function CountdownUnit({ value, label }: { value: number; label: string }) {
   const display = String(value).padStart(2, "0");
   return (
-    <div className="flex flex-col items-center gap-1">
-      <div className="bg-peach border border-navy rounded-xl w-20 h-20 md:w-24 md:h-24 flex items-center justify-center overflow-hidden">
-        <AnimatePresence mode="popLayout">
-          <motion.span
-            key={display}
-            initial={{ y: -30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 30, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="text-3xl md:text-4xl font-bold text-navy"
-          >
-            {display}
-          </motion.span>
-        </AnimatePresence>
-      </div>
+    <div className="border-2 shadow-[3px_3px_0px_0px_#001858] border-navy rounded-2xl w-20 h-24 md:w-24 md:h-28 flex flex-col gap-2 items-center justify-center overflow-hidden">
+      <AnimatePresence mode="popLayout">
+        <motion.span
+          key={display}
+          initial={{ y: -30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 30, opacity: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="text-3xl md:text-4xl font-black text-navy"
+        >
+          {display}
+        </motion.span>
+      </AnimatePresence>
       <span className="text-xs text-navy-light font-semibold uppercase tracking-wide">{label}</span>
     </div>
   );
