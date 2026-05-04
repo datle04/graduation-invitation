@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
@@ -13,22 +13,28 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.1 } },
 };
 
+type RsvpStatus = "attending" | "not_attending" | "maybe" | "";
+
 type FormState = {
   fullName: string;
-  rsvpStatus: "attending" | "not_attending" | "maybe" | "";
+  rsvpStatus: RsvpStatus;
   message: string;
   phone: string;
-};
-
-type SubmitResult = {
-  success: boolean;
-  guestName?: string;
-  error?: string;
 };
 
 type Props = {
   onSuccess: (guestName: string) => void;
 };
+
+const RSVP_OPTIONS: { value: Exclude<RsvpStatus, "">; label: string; emoji: string }[] = [
+  { value: "attending", label: "Chắc chắn rồi", emoji: "✅" },
+  { value: "maybe", label: "Chưa chắc", emoji: "🤔" },
+  { value: "not_attending", label: "Không thể", emoji: "😢" },
+];
+
+const labelClass = "text-navy text-xs font-bold tracking-widest uppercase mb-1.5 block lg:text-sm";
+const inputClass =
+  "w-full px-4 py-3 rounded-xl bg-cream border border-navy/10 text-navy text-sm placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-pink transition";
 
 export default function RSVPForm({ onSuccess }: Props) {
   const [form, setForm] = useState<FormState>({
@@ -40,8 +46,8 @@ export default function RSVPForm({ onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  function handleInput(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setError(null);
@@ -68,7 +74,7 @@ export default function RSVPForm({ onSuccess }: Props) {
       }),
     });
 
-    const data: SubmitResult = await res.json();
+    const data = await res.json();
     setLoading(false);
 
     if (!res.ok || !data.success) {
@@ -79,105 +85,128 @@ export default function RSVPForm({ onSuccess }: Props) {
     onSuccess(form.fullName);
   }
 
-  const inputClass =
-    "w-full px-4 py-3 rounded-xl border border-navy bg-cream text-navy placeholder:text-navy-light/50 focus:outline-none focus:ring-2 focus:ring-pink transition";
-
   return (
-    <section id="rsvp" className="bg-peach py-20 px-6">
+    <section id="rsvp" className="bg-cream py-20 px-6">
       <motion.div
         variants={stagger}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        className="max-w-md mx-auto flex flex-col gap-6"
+        className="max-w-md mx-auto flex flex-col items-center gap-6"
       >
-        <motion.div variants={fadeUp} className="text-center">
-          <h2 className="text-3xl font-bold text-navy">Nhận Thiệp Mời</h2>
-          <p className="text-navy-light mt-2 text-sm">
-            Nhập thông tin để nhận thiệp mời cá nhân hóa của bạn.
+        {/* Badge + heading */}
+        <motion.div variants={fadeUp} className="flex flex-col items-center gap-3 text-center">
+          <span className="px-4 py-1.5 rounded-full border bg-mint text-navy text-sm font-bold tracking-widest uppercase">
+            RSVP
+          </span>
+          <h2 className="text-3xl md:text-4xl font-black text-navy leading-tight">
+            Nhập tên để nhận thiệp
+          </h2>
+          <p className="text-navy-light text-sm">
+            Mình sẽ tạo thiệp mời cá nhân hóa cho bạn ✨
           </p>
         </motion.div>
 
+        {/* Form card */}
         <motion.form
           variants={fadeUp}
           onSubmit={handleSubmit}
-          className="flex flex-col gap-4"
+          className="w-full bg-peach border  rounded-3xl shadow-[4px_4px_0px_0px_#001858] px-6 py-7 flex flex-col gap-5"
         >
-          <motion.div variants={fadeUp}>
+          {/* Họ và tên */}
+          <div>
+            <label className={labelClass}>Họ và tên *</label>
             <input
               name="fullName"
               type="text"
-              placeholder="Họ và tên *"
+              placeholder="Nguyễn Văn A"
               value={form.fullName}
-              onChange={handleChange}
+              onChange={handleInput}
               required
               minLength={2}
               maxLength={50}
               className={inputClass}
             />
-          </motion.div>
+          </div>
 
-          <motion.div variants={fadeUp}>
-            <select
-              name="rsvpStatus"
-              value={form.rsvpStatus}
-              onChange={handleChange}
-              required
-              className={inputClass}
-            >
-              <option value="" disabled>Xác nhận tham dự *</option>
-              <option value="attending">Sẽ tham dự</option>
-              <option value="not_attending">Không tham dự</option>
-              <option value="maybe">Chưa chắc chắn</option>
-            </select>
-          </motion.div>
+          {/* RSVP toggle */}
+          <div>
+            <label className={labelClass}>Bạn sẽ đến chứ?</label>
+            <div className="grid grid-cols-3 gap-2">
+              {RSVP_OPTIONS.map((opt) => {
+                const selected = form.rsvpStatus === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => {
+                      setForm((prev) => ({ ...prev, rsvpStatus: opt.value }));
+                      setError(null);
+                    }}
+                    className={`flex items-center gap-1 px-2 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                      selected
+                        ? "bg-mint border-navy text-navy shadow-[2px_2px_0px_0px_#001858]"
+                        : "bg-cream border-navy/20 text-navy/60 hover:border-navy/40"
+                    }
+                     lg:text-sm
+                    `}
+                  >
+                    <span>{opt.emoji}</span>
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-          <motion.div variants={fadeUp}>
+          {/* Lời chúc */}
+          <div>
+            <label className={labelClass}>Lời chúc (tuỳ chọn)</label>
             <textarea
               name="message"
-              placeholder="Lời chúc (tùy chọn, tối đa 200 ký tự)"
+              placeholder="Chúc mừng Đạt nha 🎉"
               value={form.message}
-              onChange={handleChange}
+              onChange={handleInput}
               maxLength={200}
               rows={3}
               className={`${inputClass} resize-none`}
             />
-          </motion.div>
+          </div>
 
-          <motion.div variants={fadeUp}>
+          {/* Số điện thoại */}
+          <div>
+            <label className={labelClass}>Số điện thoại (tuỳ chọn)</label>
             <input
               name="phone"
               type="tel"
-              placeholder="Số điện thoại (tùy chọn)"
+              placeholder="0901 234 567"
               value={form.phone}
-              onChange={handleChange}
+              onChange={handleInput}
               className={inputClass}
             />
-          </motion.div>
+          </div>
 
           {error && (
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-red-600 text-sm text-center"
+              className="text-red-500 text-xs text-center"
             >
               {error}
             </motion.p>
           )}
 
-          <motion.div variants={fadeUp}>
-            <motion.button
-              type="submit"
-              disabled={loading}
-              animate={{ scale: loading ? 1 : [1, 1.02, 1] }}
-              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-              className="w-full py-3 bg-pink text-navy font-bold rounded-full shadow-md hover:shadow-lg transition-shadow disabled:opacity-60"
-            >
-              {loading ? "Đang gửi..." : "Nhận Thiệp"}
-            </motion.button>
-          </motion.div>
+          <motion.button
+            type="submit"
+            disabled={loading}
+            animate={loading ? {} : { scale: [1, 1.1, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+            className="w-[95%] mx-auto py-4 bg-pink text-navy font-bold rounded-2xl border-2 border-navy shadow-[4px_4px_0px_0px_#001858] text-sm lg:text-base tracking-wide disabled:opacity-60 transition-transform cursor-pointer"
+          >
+            {loading ? "Đang gửi..." : "Gửi xác nhận & xem thiệp"}
+          </motion.button>
         </motion.form>
       </motion.div>
     </section>
