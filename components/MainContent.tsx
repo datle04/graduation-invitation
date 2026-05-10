@@ -6,6 +6,9 @@ import RSVPForm from "@/components/RSVPForm";
 import ConfettiEffect from "./ConfettiEffect";
 import CountdownSection from "./CountdownSection";
 import EventInfo from "./EventInfo";
+import InvitationCard from "./InvitationCard";
+import Gallery from "./Gallery";
+import Footer from "./Footer";
 
 export default function MainContent() {
   const [submittedName, setSubmittedName] = useState<string | null>(null);
@@ -18,10 +21,10 @@ export default function MainContent() {
       <EventInfo/>
       <RSVPForm onSuccess={(name) => setSubmittedName(name)} />
       {submittedName && (
-        <p className="text-center text-navy py-8">
-          Xin chào <strong>{submittedName}</strong>! Thiệp mời sẽ hiển thị ở đây.
-        </p>
+        <InvitationCard guestName={submittedName} />
       )}
+      {/* <Gallery /> */}
+      <Footer/>
     </main>
   );
 }
