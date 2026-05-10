@@ -1,7 +1,7 @@
 export const EVENT = {
   name: "Lê Tấn Đạt",
   school: "Đại học Nguyễn Tất Thành",
-  faculty: "Khoa Công nghệ Thông tin",
+  faculty: "Khoa CNTT",
   major: "Kỹ thuật Công nghệ Thông tin",
   date: process.env.NEXT_PUBLIC_EVENT_DATE ?? null,
   location: process.env.NEXT_PUBLIC_EVENT_LOCATION ?? "Chưa cập nhật",
