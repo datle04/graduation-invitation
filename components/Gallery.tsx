@@ -32,29 +32,42 @@ export default function Gallery() {
           <h2 className="text-3xl font-bold text-navy">Ngày trọng đại</h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 gap-3">
-          {GALLERY_ITEMS.map((item, i) => (
-            <motion.div
-              key={i}
-              variants={fadeUp}
-              whileHover={{ scale: 1.03 }}
-              onClick={() => setLightbox(i)}
-              className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-navy/10 cursor-pointer bg-cream"
-            >
-              <Image
-                src={item.src}
-                alt={item.caption}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 50vw, 200px"
-              />
-              <div className="absolute bottom-0 inset-x-0 bg-navy/40 backdrop-blur-sm px-3 py-2">
-                <p className="text-cream text-xs font-semibold truncate">{item.caption}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+        {GALLERY_ITEMS.length === 0 ? (
+          <motion.div
+            variants={fadeUp}
+            className="flex flex-col items-center gap-3 py-12 border-2 border-dashed border-navy/20 rounded-3xl"
+          >
+            <span className="text-4xl">📸</span>
+            <p className="text-navy font-semibold text-sm">Sắp có ảnh tại đây</p>
+            <p className="text-navy-light text-xs text-center max-w-[200px]">
+              Ảnh từ ngày lễ tốt nghiệp sẽ được cập nhật sau buổi lễ.
+            </p>
+          </motion.div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            {GALLERY_ITEMS.map((item, i) => (
+              <motion.div
+                key={i}
+                variants={fadeUp}
+                whileHover={{ scale: 1.03 }}
+                onClick={() => setLightbox(i)}
+                className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-navy/10 cursor-pointer bg-cream"
+              >
+                <Image
+                  src={item.src}
+                  alt={item.caption}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 50vw, 200px"
+                />
+                <div className="absolute bottom-0 inset-x-0 bg-navy/40 backdrop-blur-sm px-3 py-2">
+                  <p className="text-cream text-xs font-semibold truncate">{item.caption}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          )}
+        </motion.div>
 
       {/* Lightbox */}
       <AnimatePresence>

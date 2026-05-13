@@ -23,7 +23,7 @@ export default function MainContent() {
       {submittedName && (
         <InvitationCard guestName={submittedName} />
       )}
-      {/* <Gallery /> */}
+      <Gallery />
       <Footer/>
     </main>
   );
